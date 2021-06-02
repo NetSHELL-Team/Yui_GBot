@@ -25,9 +25,8 @@ The Support group can be reached out to at [ＹＵｉ ◈ Sᴜᴘᴘᴏʀᴛ](ht
 
 # Note:
 
-Please Now Don't Fork & Testing This Repo ✨
+injoy Stable Version of Heroku &. Linux Ubontu 14,16,18,20 & Centos7 😎
 
-Heroku Deploy & Self Host Deploy Coming Soon
 Any other questions to Join  [ＹＵｉ ◈ Sᴜᴘᴘᴏʀᴛ](https://t.me/Yui_Official)
 
 
