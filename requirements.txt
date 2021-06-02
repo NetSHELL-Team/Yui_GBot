@@ -60,3 +60,4 @@ random2
 image
 fonttools
 multicolorcaptcha
+tgcrypto
