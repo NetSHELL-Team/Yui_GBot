@@ -103,8 +103,8 @@ And the following:
     "" if not ALLOW_EXCL else "\nAll commands can either be used with / or !.\n",
 )
 
-YuiGBot_IMG = "https://telegra.ph/file/f73506e09900f96a9c16e.png"
-GSTART_IMG = "https://telegra.ph/file/8051350a1afea2c772dd5.mp4"
+YuiGBot_IMG = "https://telegra.ph/file/cd85af914950bcc329e92.mp4"
+GSTART_IMG = "https://telegra.ph/file/4aa8beb813c0ab3295e0e.mp4"
 
 DONATE_STRING = """You can support the project via [UPi](https://telegra.ph/L%CE%9EG%CE%9EID-04-09-2) or by contacting @NetSHEEL\
  Supporting isnt always financial! \
@@ -258,7 +258,7 @@ def start(update: Update, context: CallbackContext):
             )
     else:
         update.effective_message.reply_video(
-                GSTART_IMG, caption=f"Yoo 😊")
+                GSTART_IMG, caption=f"Yoo ☺️😊")
 
         
         #GSTART_IMG
