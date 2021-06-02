@@ -257,7 +257,7 @@ def start(update: Update, context: CallbackContext):
                 ),
             )
     else:
-        update.effective_message.reply_video(
+        update.effective_message.reply_animation(
                 GSTART_IMG, caption=f"Yoo ☺️😊")
 
         
