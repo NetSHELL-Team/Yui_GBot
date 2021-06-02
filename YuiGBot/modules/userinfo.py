@@ -32,7 +32,7 @@ from YuiGBot.modules.sql.afk_sql import is_afk, check_afk_status
 from YuiGBot.modules.sql.users_sql import get_user_num_chats
 from YuiGBot.modules.helper_funcs.chat_status import sudo_plus
 from YuiGBot.modules.helper_funcs.extraction import extract_user
-from YuiGBot import telethn as SaitamaTelethonClient, TIGERS, DRAGONS, DEMONS
+from YuiGBot import telethn as YuiTelethonClient, TIGERS, DRAGONS, DEMONS
 
 
 def no_by_per(totalhp, percentage):
@@ -151,16 +151,16 @@ def get_id(update: Update, context: CallbackContext):
 
         if chat.type == "private":
             msg.reply_text(
-                f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+                f"➦ ••• Your iD ••• \n➥ <code>{chat.id}</code>", parse_mode=ParseMode.HTML
             )
 
         else:
             msg.reply_text(
-                f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+                f"➦ •••• Group ID •••• \n➥ <code>{chat.id}</code> ", parse_mode=ParseMode.HTML
             )
 
 
-@SaitamaTelethonClient.on(
+@YuiTelethonClient.on(
     events.NewMessage(
         pattern="/ginfo ", from_users=(TIGERS or []) + (DRAGONS or []) + (DEMONS or [])
     )
@@ -241,21 +241,21 @@ def info(update: Update, context: CallbackContext):
     rep = message.reply_text("<code> °°° Ｓｃａｎ Ｕｓｅｒ °°° </code>", parse_mode=ParseMode.HTML)
 
     text = (
-        f"<b>┎━─━─ㄴUsᴇʀ ιɴғoㄱ</b>\n"
-        f"✦ ID: <code>{user.id}</code>\n"
-        f"✦ First Name: {html.escape(user.first_name)}"
+        f"<b>┎━─━─「ᴜsᴇʀ ɪɴғᴏ」</b>\n"
+        f"✥ UID: <code>{user.id}</code>\n"
+        f"✥ F Name: {html.escape(user.first_name)}"
     )
 
     if user.last_name:
-        text += f"\n✦ Last Name: {html.escape(user.last_name)}"
+        text += f"\n✥ L Name: {html.escape(user.last_name)}"
 
     if user.username:
-        text += f"\n✦ Username: @{html.escape(user.username)}"
+        text += f"\n✥ Username: @{html.escape(user.username)}"
 
-    text += f"\n✦ Profile Link: {mention_html(user.id, 'link')}"
+    text += f"\n✥ Profile Link: {mention_html(user.id, 'link')}"
 
     if chat.type != "private" and user_id != bot.id:
-        _stext = "\n✦ Presence: <code>{}</code>"
+        _stext = "\n✥ Existence: <code>{}</code>"
 
         afk_st = is_afk(user.id)
         if afk_st:
@@ -264,9 +264,9 @@ def info(update: Update, context: CallbackContext):
             status = status = bot.get_chat_member(chat.id, user.id).status
             if status:
                 if status in {"left", "kicked"}:
-                    text += _stext.format("Not here")
+                    text += _stext.format("Not Here")
                 elif status == "member":
-                    text += _stext.format("Detected")
+                    text += _stext.format("Yes Here")
                 elif status in {"administrator", "creator"}:
                     text += _stext.format("Admin")
     if user_id not in [bot.id, 777000, 1087968824]:
@@ -287,26 +287,26 @@ def info(update: Update, context: CallbackContext):
     disaster_level_present = False
 
     if user.id == OWNER_ID:
-        text += "\n\nThe Disaster level of this person is 'God'."
+        text += "\n\n✥ ᒪEGEᑎᗪ oF "
         disaster_level_present = True
     elif user.id in DEV_USERS:
-        text += "\n\nThis user is member of 'Yui DEV'."
+        text += "\n\n✥ DEvⷪ USER oF "
         disaster_level_present = True
     elif user.id in DRAGONS:
-        text += "\n\nThe Disaster level of this person is 'Dragon'."
+        text += "\n\n✥ 🐉ɾαցօղ USER oF "
         disaster_level_present = True
     elif user.id in DEMONS:
-        text += "\n\nThe Disaster level of this person is 'Demon'."
+        text += "\n\n✥ Dem👿n USER oF "
         disaster_level_present = True
     elif user.id in TIGERS:
-        text += "\n\nThe Disaster level of this person is 'Tiger'."
+        text += "\n\n✥ TiGER USER oF "
         disaster_level_present = True
     elif user.id in WOLVES:
-        text += "\n\nThe Disaster level of this person is 'Wolf'."
+        text += "\n\n✥ SAFE USER oF "
         disaster_level_present = True
 
     if disaster_level_present:
-        text += ' [<a href="https://t.me/Yui_Official">POWER</a>]'.format(
+        text += '「<a href="https://t.me/tGOD_Support"> ｔ-𝙶𝙾𝙳 </a>」'.format(
             bot.username
         )
 
