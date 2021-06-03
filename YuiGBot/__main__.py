@@ -104,7 +104,7 @@ And the following:
 )
 
 YuiGBot_IMG = "https://telegra.ph/file/cd85af914950bcc329e92.mp4"
-GSTART_IMG = "https://telegra.ph/file/4aa8beb813c0ab3295e0e.mp4"
+GSTART_IMG = "https://telegra.ph/file/8be5e238bdd8aa216e60d.jpg"
 
 DONATE_STRING = """You can support the project via [UPi](https://telegra.ph/L%CE%9EG%CE%9EID-04-09-2) or by contacting @NetSHEEL\
  Supporting isnt always financial! \
@@ -257,7 +257,7 @@ def start(update: Update, context: CallbackContext):
                 ),
             )
     else:
-        update.effective_message.reply_animation(
+        update.effective_message.reply_photo(
                 GSTART_IMG, caption=f"Yoo ☺️😊")
 
         
