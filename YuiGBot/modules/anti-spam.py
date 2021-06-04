@@ -9,7 +9,7 @@ __help__ = f"""
 Anti-Spam, used by bot devs to ban spammers across all groups. This helps protect 
 you and your groups by removing spam flooders as quickly as possible.
 
-*Note:* Users can appeal gbans or report spammers at @{SUPPORT_CHAT}
+*Note:* Users can appeal gbans or report spammers at @Yui_Official
 
 
 *AnTi-Spam Force ON*
