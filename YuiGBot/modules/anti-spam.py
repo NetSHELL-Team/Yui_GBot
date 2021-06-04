@@ -18,4 +18,4 @@ t-GOD System
 Eagle System
 """    
 
-__mod_name__ = "Anti-Spam 🔰"
+__mod_name__ = "Anti Protact 🔰"
