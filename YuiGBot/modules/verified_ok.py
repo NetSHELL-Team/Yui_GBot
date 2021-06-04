@@ -4,5 +4,5 @@ VERIFY = (
 )
 
 DRAJ = (
-    "DRAJ Check @draj_48 😎?",
+    "*RFJBSiBDaGVjayBAZHJhal80OCDwn5iOPw==*",
 )
