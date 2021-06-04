@@ -81,12 +81,7 @@ ETA: {}""".format(
                         # logger.info(str(e))
         return await response.release()
     
-__help__ = """
-    
- File To Link:
- ⦁ /upload: reply to a telegram file to upload it on transfersh and get direct download link
- 
- """
+
 
 
 
