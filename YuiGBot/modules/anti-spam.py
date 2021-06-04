@@ -1,7 +1,4 @@
-__mod_name__ = "Anti-Spam 🔰" 
-
 __help__ = """
-
 *Admins ONLY*
 
 • /antispam <on/off/yes/no> Will toggle our antispam tech or return your current settings.
@@ -19,5 +16,6 @@ SpamWatch
 t-GOD System
 
 Eagle System
-
 """    
+
+__mod_name__ = "Anti-Spam 🔰"
