@@ -61,3 +61,4 @@ image
 fonttools
 multicolorcaptcha
 tgcrypto
+google-trans-new==1.1.9
