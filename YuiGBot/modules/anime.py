@@ -491,7 +491,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
             more_results = False
             result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official"
 
-    elif site == "DvAnime":
+    elif site == "DVanime":
         search_url = f"https://dvanime.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
@@ -545,7 +545,7 @@ Get information about anime, manga or characters from [AniList](anilist.co).
  • `/user <user>`*:* returns information about a MyAnimeList user.
  • `/upcoming`*:* returns a list of new anime in the upcoming seasons.
  • `/tpx <anime>`*:* search an anime on animekaizoku.com
- • `/dv <anime>`*:* search an anime on animekayo.com
+ • `/dv <anime>`*:* search an anime on dvanime.com
  • `/airing <anime>`*:* returns anime airing info.
 
  """
