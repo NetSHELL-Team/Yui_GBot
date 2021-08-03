@@ -27,7 +27,7 @@ The Support group can be reached out to at [ＹＵｉ ◈ Sᴜᴘᴘᴏʀᴛ](ht
 
 <b> There are too many bugs in this yui repo and this repo has not been completed yet kang your own risk & your time waste 🤣 </b>
 
-injoy Stable Version of Heroku &. Linux Ubontu 14,16,18,20 & Centos7 😎
+injoy Stable Version of Linux Ubontu 14,16,18,20 & Centos7 😎
 
 Any other questions to Join  [ＹＵｉ ◈ Sᴜᴘᴘᴏʀᴛ](https://t.me/Yui_Official)
 
