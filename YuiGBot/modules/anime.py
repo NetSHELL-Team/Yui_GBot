@@ -475,33 +475,33 @@ def site_search(update: Update, context: CallbackContext, site: str):
         message.reply_text("Give something to search")
         return
 
-    if site == "PlyTon":
-        search_url = f"https://www.plyton.in/?s={search_query}"
+    if site == "TPX":
+        search_url = f"https://hindisub.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
         search_result = soup.find_all("h2", {"class": "post-title"})
 
         if search_result:
-            result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @plyton_team \n"
+            result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official \n"
             for entry in search_result:
-                post_link = "https://www.plyton.in/" + entry.a["href"]
+                post_link = "https://hindisub.com/" + entry.a["href"]
                 post_name = html.escape(entry.text)
                 result += f"• <a href='{post_link}'>{post_name}</a>\n"
         else:
             more_results = False
-            result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> @plyton_team"
+            result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official"
 
-    elif site == "DVAnime":
+    elif site == "DVanime":
         search_url = f"https://dvanime.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
         search_result = soup.find_all("h2", {"class": "title"})
 
-        result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DvAnime</code>: \n"
+        result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DVanime</code>: \n"
         for entry in search_result:
 
             if entry.text.strip() == "Nothing Found":
-                result = f"<b>No Result</b> <code>{html.escape(search_query)}</code> <b>ON</b> <code>DvAnime</code>"
+                result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DVanime</code>"
                 more_results = False
                 break
 
@@ -509,7 +509,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
             post_name = html.escape(entry.text.strip())
             result += f"• <a href='{post_link}'>{post_name}</a>\n"
 
-    buttons = [[InlineKeyboardButton("Check ALL Anime", url=search_url)]]
+    buttons = [[InlineKeyboardButton("See all results", url=search_url)]]
 
     if more_results:
         message.reply_text(
@@ -525,8 +525,8 @@ def site_search(update: Update, context: CallbackContext, site: str):
 
 
 @run_async
-def pt(update: Update, context: CallbackContext):
-    site_search(update, context, "PT")
+def tpx(update: Update, context: CallbackContext):
+    site_search(update, context, "TPX")
 
 
 @run_async
@@ -539,13 +539,14 @@ Get information about anime, manga or characters from [AniList](anilist.co).
 
 *Available commands:*
 
- • /anime returns information about the anime.
- • /character returns information about the character.
- • /manga returns information about the manga.
- • /user returns information about a MyAnimeList user.
- • /upcoming returns a list of new anime in the upcoming seasons.
- • /dv search an anime on dvanime.com
- • /airing returns anime airing info.
+ • `/anime <anime>`*:* returns information about the anime.
+ • `/character <character>`*:* returns information about the character.
+ • `/manga <manga>`*:* returns information about the manga.
+ • `/user <user>`*:* returns information about a MyAnimeList user.
+ • `/upcoming`*:* returns a list of new anime in the upcoming seasons.
+ • `/tpx <anime>`*:* search an anime on animekaizoku.com
+ • `/dv <anime>`*:* search an anime on animekayo.com
+ • `/airing <anime>`*:* returns anime airing info.
 
  """
 
@@ -555,7 +556,7 @@ CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
 MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
 USER_HANDLER = DisableAbleCommandHandler("user", user)
 UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
-PT_SEARCH_HANDLER = DisableAbleCommandHandler("pt", pt)
+TPX_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", tpx)
 DV_SEARCH_HANDLER = DisableAbleCommandHandler("dv", dv)
 
 dispatcher.add_handler(ANIME_HANDLER)
@@ -563,11 +564,11 @@ dispatcher.add_handler(CHARACTER_HANDLER)
 dispatcher.add_handler(MANGA_HANDLER)
 dispatcher.add_handler(AIRING_HANDLER)
 dispatcher.add_handler(USER_HANDLER)
-dispatcher.add_handler(PT_SEARCH_HANDLER)
+dispatcher.add_handler(TPX_SEARCH_HANDLER)
 dispatcher.add_handler(DV_SEARCH_HANDLER)
 dispatcher.add_handler(UPCOMING_HANDLER)
 
-__mod_name__ = "ANiME"
+__mod_name__ = "Anime"
 __command_list__ = [
     "anime",
     "manga",
@@ -584,7 +585,7 @@ __handlers__ = [
     MANGA_HANDLER,
     USER_HANDLER,
     UPCOMING_HANDLER,
-    PT_SEARCH_HANDLER,
+    TPX_SEARCH_HANDLER,
     DV_SEARCH_HANDLER,
     AIRING_HANDLER,
 ]
