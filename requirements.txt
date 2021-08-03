@@ -61,3 +61,4 @@ image
 fonttools
 multicolorcaptcha
 tgcrypto
+jsonlib
