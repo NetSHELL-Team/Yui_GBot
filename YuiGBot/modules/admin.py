@@ -1,590 +1,540 @@
-import datetime
 import html
-import textwrap
 
-import bs4
-import jikanpy
-import requests
-from YuiGBot import dispatcher
+from telegram import ParseMode, Update
+from telegram.error import BadRequest
+from telegram.ext import CallbackContext, CommandHandler, Filters, run_async
+from telegram.utils.helpers import mention_html
+
+from YuiGBot import DRAGONS, dispatcher
 from YuiGBot.modules.disable import DisableAbleCommandHandler
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
-from telegram.ext import CallbackContext, run_async
+from YuiGBot.modules.helper_funcs.chat_status import (
+    bot_admin,
+    can_pin,
+    can_promote,
+    connection_status,
+    user_admin,
+    ADMIN_CACHE,
+)
 
-info_btn = "More Information"
-kaizoku_btn = "Kaizoku ☠️"
-kayo_btn = "Kayo 🏴‍☠️"
-prequel_btn = "⬅️ Prequel"
-sequel_btn = "Sequel ➡️"
-close_btn = "Close ❌"
-
-
-def shorten(description, info="anilist.co"):
-    msg = ""
-    if len(description) > 700:
-        description = description[0:500] + "...."
-        msg += f"\n*Description*: _{description}_[Read More]({info})"
-    else:
-        msg += f"\n*Description*:_{description}_"
-    return msg
+from YuiGBot.modules.helper_funcs.extraction import (
+    extract_user,
+    extract_user_and_text,
+)
+from YuiGBot.modules.log_channel import loggable
+from YuiGBot.modules.helper_funcs.alternate import send_message
 
 
-# time formatter from uniborg
-def t(milliseconds: int) -> str:
-    """Inputs time in milliseconds, to get beautified time,
-    as string"""
-    seconds, milliseconds = divmod(int(milliseconds), 1000)
-    minutes, seconds = divmod(seconds, 60)
-    hours, minutes = divmod(minutes, 60)
-    days, hours = divmod(hours, 24)
-    tmp = (
-        ((str(days) + " Days, ") if days else "")
-        + ((str(hours) + " Hours, ") if hours else "")
-        + ((str(minutes) + " Minutes, ") if minutes else "")
-        + ((str(seconds) + " Seconds, ") if seconds else "")
-        + ((str(milliseconds) + " ms, ") if milliseconds else "")
+@run_async
+@connection_status
+@bot_admin
+@can_promote
+@user_admin
+@loggable
+def promote(update: Update, context: CallbackContext) -> str:
+    bot = context.bot
+    args = context.args
+
+    message = update.effective_message
+    chat = update.effective_chat
+    user = update.effective_user
+
+    promoter = chat.get_member(user.id)
+
+    if (
+        not (promoter.can_promote_members or promoter.status == "creator")
+        and user.id not in DRAGONS
+    ):
+        message.reply_text("You don't have the necessary rights to do that!")
+        return
+
+    user_id = extract_user(message, args)
+
+    if not user_id:
+        message.reply_text(
+            "You don't seem to be referring to a user or the ID specified is incorrect.."
+        )
+        return
+
+    try:
+        user_member = chat.get_member(user_id)
+    except:
+        return
+
+    if user_member.status == "administrator" or user_member.status == "creator":
+        message.reply_text("How am I meant to promote someone that's already an admin?")
+        return
+
+    if user_id == bot.id:
+        message.reply_text("I can't promote myself! Get an admin to do it for me.")
+        return
+
+    # set same perms as bot - bot can't assign higher perms than itself!
+    bot_member = chat.get_member(bot.id)
+
+    try:
+        bot.promoteChatMember(
+            chat.id,
+            user_id,
+            can_change_info=bot_member.can_change_info,
+            can_post_messages=bot_member.can_post_messages,
+            can_edit_messages=bot_member.can_edit_messages,
+            can_delete_messages=bot_member.can_delete_messages,
+            can_invite_users=bot_member.can_invite_users,
+            # can_promote_members=bot_member.can_promote_members,
+            can_restrict_members=bot_member.can_restrict_members,
+            can_pin_messages=bot_member.can_pin_messages,
+        )
+    except BadRequest as err:
+        if err.message == "User_not_mutual_contact":
+            message.reply_text("I can't promote someone who isn't in the group.")
+        else:
+            message.reply_text("An error occured while promoting.")
+        return
+
+    bot.sendMessage(
+        chat.id,
+        f"Sucessfully Promoted <b>{user_member.user.first_name or user_id}</b>!",
+        parse_mode=ParseMode.HTML,
     )
-    return tmp[:-2]
 
+    log_message = (
+        f"<b>{html.escape(chat.title)}:</b>\n"
+        f"#PROMOTED\n"
+        f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+        f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
+    )
 
-airing_query = """
-query ($id: Int,$search: String) { 
-    Media (id: $id, type: ANIME,search: $search) {
-        id
-        episodes
-        title {
-            romaji
-            english
-            native
-        }
-        nextAiringEpisode {
-            airingAt
-            timeUntilAiring
-            episode
-        } 
-    }
-}
-"""
-
-fav_query = """
-query ($id: Int) {
-    Media (id: $id, type: ANIME) {
-        id
-        title {
-            romaji
-            english
-            native
-        }
-    }
-}
-"""
-
-anime_query = """
-query ($id: Int,$search: String) {
-    Media (id: $id, type: ANIME,search: $search) {
-        id
-        title {
-            romaji
-            english
-            native
-        }
-        description (asHtml: false)
-        startDate{
-            year
-        }
-        episodes
-        season
-        type
-        format
-        status
-        duration
-        siteUrl
-        studios{
-            nodes{
-                name
-            }
-        }
-        trailer{
-            id
-            site
-            thumbnail
-        }
-        averageScore
-        genres
-        bannerImage
-    }
-}
-"""
-
-character_query = """
-query ($query: String) {
-    Character (search: $query) {
-        id
-        name {
-            first
-            last
-            full
-        }
-        siteUrl
-        image {
-            large
-        }
-        description
-    }
-}
-"""
-
-manga_query = """
-query ($id: Int,$search: String) { 
-    Media (id: $id, type: MANGA,search: $search) { 
-        id
-        title {
-            romaji
-            english
-            native
-        }
-        description (asHtml: false)
-        startDate{
-            year
-        }
-        type
-        format
-        status
-        siteUrl
-        averageScore
-        genres
-        bannerImage
-    }
-}
-"""
-
-url = "https://graphql.anilist.co"
+    return log_message
 
 
 @run_async
-def airing(update: Update, context: CallbackContext):
+@connection_status
+@bot_admin
+@can_promote
+@user_admin
+@loggable
+def demote(update: Update, context: CallbackContext) -> str:
+    bot = context.bot
+    args = context.args
+
+    chat = update.effective_chat
     message = update.effective_message
-    search_str = message.text.split(" ", 1)
-    if len(search_str) == 1:
-        update.effective_message.reply_text(
-            "Tell Anime Name :) ( /airing <anime name>)"
+    user = update.effective_user
+
+    user_id = extract_user(message, args)
+    if not user_id:
+        message.reply_text(
+            "You don't seem to be referring to a user or the ID specified is incorrect.."
         )
         return
-    variables = {"search": search_str[1]}
-    response = requests.post(
-        url, json={"query": airing_query, "variables": variables}
-    ).json()["data"]["Media"]
-    msg = f"*Name*: *{response['title']['romaji']}*(`{response['title']['native']}`)\n*ID*: `{response['id']}`"
-    if response["nextAiringEpisode"]:
-        time = response["nextAiringEpisode"]["timeUntilAiring"] * 1000
-        time = t(time)
-        msg += f"\n*Episode*: `{response['nextAiringEpisode']['episode']}`\n*Airing In*: `{time}`"
-    else:
-        msg += f"\n*Episode*:{response['episodes']}\n*Status*: `N/A`"
-    update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
-
-
-@run_async
-def anime(update: Update, context: CallbackContext):
-    message = update.effective_message
-    search = message.text.split(" ", 1)
-    if len(search) == 1:
-        update.effective_message.reply_text("Format : /anime < anime name >")
-        return
-    else:
-        search = search[1]
-    variables = {"search": search}
-    json = requests.post(
-        url, json={"query": anime_query, "variables": variables}
-    ).json()
-    if "errors" in json.keys():
-        update.effective_message.reply_text("Anime not found")
-        return
-    if json:
-        json = json["data"]["Media"]
-        msg = f"*{json['title']['romaji']}*(`{json['title']['native']}`)\n*Type*: {json['format']}\n*Status*: {json['status']}\n*Episodes*: {json.get('episodes', 'N/A')}\n*Duration*: {json.get('duration', 'N/A')} Per Ep.\n*Score*: {json['averageScore']}\n*Genres*: `"
-        for x in json["genres"]:
-            msg += f"{x}, "
-        msg = msg[:-2] + "`\n"
-        msg += "*Studios*: `"
-        for x in json["studios"]["nodes"]:
-            msg += f"{x['name']}, "
-        msg = msg[:-2] + "`\n"
-        info = json.get("siteUrl")
-        trailer = json.get("trailer", None)
-        anime_id = json["id"]
-        if trailer:
-            trailer_id = trailer.get("id", None)
-            site = trailer.get("site", None)
-            if site == "youtube":
-                trailer = "https://youtu.be/" + trailer_id
-        description = (
-            json.get("description", "N/A")
-            .replace("<i>", "")
-            .replace("</i>", "")
-            .replace("<br>", "")
-        )
-        msg += shorten(description, info)
-        image = json.get("bannerImage", None)
-        if trailer:
-            buttons = [
-                [
-                    InlineKeyboardButton("More Info", url=info),
-                    InlineKeyboardButton("Trailer 🎬", url=trailer),
-                ]
-            ]
-        else:
-            buttons = [[InlineKeyboardButton("More Info", url=info)]]
-        if image:
-            try:
-                update.effective_message.reply_photo(
-                    photo=image,
-                    caption=msg,
-                    parse_mode=ParseMode.MARKDOWN,
-                    reply_markup=InlineKeyboardMarkup(buttons),
-                )
-            except:
-                msg += f" [〽️]({image})"
-                update.effective_message.reply_text(
-                    msg,
-                    parse_mode=ParseMode.MARKDOWN,
-                    reply_markup=InlineKeyboardMarkup(buttons),
-                )
-        else:
-            update.effective_message.reply_text(
-                msg,
-                parse_mode=ParseMode.MARKDOWN,
-                reply_markup=InlineKeyboardMarkup(buttons),
-            )
-
-
-@run_async
-def character(update: Update, context: CallbackContext):
-    message = update.effective_message
-    search = message.text.split(" ", 1)
-    if len(search) == 1:
-        update.effective_message.reply_text("Format : /character < character name >")
-        return
-    search = search[1]
-    variables = {"query": search}
-    json = requests.post(
-        url, json={"query": character_query, "variables": variables}
-    ).json()
-    if "errors" in json.keys():
-        update.effective_message.reply_text("Character not found")
-        return
-    if json:
-        json = json["data"]["Character"]
-        msg = f"*{json.get('name').get('full')}*(`{json.get('name').get('native')}`)\n"
-        description = f"{json['description']}"
-        site_url = json.get("siteUrl")
-        msg += shorten(description, site_url)
-        image = json.get("image", None)
-        if image:
-            image = image.get("large")
-            update.effective_message.reply_photo(
-                photo=image,
-                caption=msg.replace("<b>", "</b>"),
-                parse_mode=ParseMode.MARKDOWN,
-            )
-        else:
-            update.effective_message.reply_text(
-                msg.replace("<b>", "</b>"), parse_mode=ParseMode.MARKDOWN
-            )
-
-
-@run_async
-def manga(update: Update, context: CallbackContext):
-    message = update.effective_message
-    search = message.text.split(" ", 1)
-    if len(search) == 1:
-        update.effective_message.reply_text("Format : /manga < manga name >")
-        return
-    search = search[1]
-    variables = {"search": search}
-    json = requests.post(
-        url, json={"query": manga_query, "variables": variables}
-    ).json()
-    msg = ""
-    if "errors" in json.keys():
-        update.effective_message.reply_text("Manga not found")
-        return
-    if json:
-        json = json["data"]["Media"]
-        title, title_native = json["title"].get("romaji", False), json["title"].get(
-            "native", False
-        )
-        start_date, status, score = (
-            json["startDate"].get("year", False),
-            json.get("status", False),
-            json.get("averageScore", False),
-        )
-        if title:
-            msg += f"*{title}*"
-            if title_native:
-                msg += f"(`{title_native}`)"
-        if start_date:
-            msg += f"\n*Start Date* - `{start_date}`"
-        if status:
-            msg += f"\n*Status* - `{status}`"
-        if score:
-            msg += f"\n*Score* - `{score}`"
-        msg += "\n*Genres* - "
-        for x in json.get("genres", []):
-            msg += f"{x}, "
-        msg = msg[:-2]
-        info = json["siteUrl"]
-        buttons = [[InlineKeyboardButton("More Info", url=info)]]
-        image = json.get("bannerImage", False)
-        msg += f"_{json.get('description', None)}_"
-        if image:
-            try:
-                update.effective_message.reply_photo(
-                    photo=image,
-                    caption=msg,
-                    parse_mode=ParseMode.MARKDOWN,
-                    reply_markup=InlineKeyboardMarkup(buttons),
-                )
-            except:
-                msg += f" [〽️]({image})"
-                update.effective_message.reply_text(
-                    msg,
-                    parse_mode=ParseMode.MARKDOWN,
-                    reply_markup=InlineKeyboardMarkup(buttons),
-                )
-        else:
-            update.effective_message.reply_text(
-                msg,
-                parse_mode=ParseMode.MARKDOWN,
-                reply_markup=InlineKeyboardMarkup(buttons),
-            )
-
-
-@run_async
-def user(update: Update, context: CallbackContext):
-    message = update.effective_message
-    args = message.text.strip().split(" ", 1)
 
     try:
-        search_query = args[1]
+        user_member = chat.get_member(user_id)
     except:
-        if message.reply_to_message:
-            search_query = message.reply_to_message.text
-        else:
-            update.effective_message.reply_text("Format : /user <username>")
-            return
-
-    jikan = jikanpy.jikan.Jikan()
-
-    try:
-        us = jikan.user(search_query)
-    except jikanpy.APIException:
-        update.effective_message.reply_text("Username not found.")
         return
 
-    progress_message = update.effective_message.reply_text("Searching.... ")
+    if user_member.status == "creator":
+        message.reply_text("This person CREATED the chat, how would I demote them?")
+        return
 
-    date_format = "%Y-%m-%d"
-    if us["image_url"] is None:
-        img = "https://cdn.myanimelist.net/images/questionmark_50.gif"
-    else:
-        img = us["image_url"]
+    if not user_member.status == "administrator":
+        message.reply_text("Can't demote what wasn't promoted!")
+        return
 
-    try:
-        user_birthday = datetime.datetime.fromisoformat(us["birthday"])
-        user_birthday_formatted = user_birthday.strftime(date_format)
-    except:
-        user_birthday_formatted = "Unknown"
-
-    user_joined_date = datetime.datetime.fromisoformat(us["joined"])
-    user_joined_date_formatted = user_joined_date.strftime(date_format)
-
-    for entity in us:
-        if us[entity] is None:
-            us[entity] = "Unknown"
-
-    about = us["about"].split(" ", 60)
+    if user_id == bot.id:
+        message.reply_text("I can't demote myself! Get an admin to do it for me.")
+        return
 
     try:
-        about.pop(60)
-    except IndexError:
+        bot.promoteChatMember(
+            chat.id,
+            user_id,
+            can_change_info=False,
+            can_post_messages=False,
+            can_edit_messages=False,
+            can_delete_messages=False,
+            can_invite_users=False,
+            can_restrict_members=False,
+            can_pin_messages=False,
+            can_promote_members=False,
+        )
+
+        bot.sendMessage(
+            chat.id,
+            f"Sucessfully Demoted <b>{user_member.user.first_name or user_id}</b>!",
+            parse_mode=ParseMode.HTML,
+        )
+
+        log_message = (
+            f"<b>{html.escape(chat.title)}:</b>\n"
+            f"#DEMOTED\n"
+            f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
+            f"<b>User:</b> {mention_html(user_member.user.id, user_member.user.first_name)}"
+        )
+
+        return log_message
+    except BadRequest:
+        message.reply_text(
+            "Could not demote. I might not be admin, or the admin status was appointed by another"
+            " user, so I can't act upon them!"
+        )
+        return
+
+
+@run_async
+@user_admin
+def refresh_admin(update, _):
+    try:
+        ADMIN_CACHE.pop(update.effective_chat.id)
+    except KeyError:
         pass
 
-    about_string = " ".join(about)
-    about_string = about_string.replace("<br>", "").strip().replace("\r\n", "\n")
-
-    caption = ""
-
-    caption += textwrap.dedent(
-        f"""
-    *Username*: [{us['username']}]({us['url']})
-
-    *Gender*: `{us['gender']}`
-    *Birthday*: `{user_birthday_formatted}`
-    *Joined*: `{user_joined_date_formatted}`
-    *Days wasted watching anime*: `{us['anime_stats']['days_watched']}`
-    *Days wasted reading manga*: `{us['manga_stats']['days_read']}`
-
-    """
-    )
-
-    caption += f"*About*: {about_string}"
-
-    buttons = [
-        [InlineKeyboardButton(info_btn, url=us["url"])],
-        [
-            InlineKeyboardButton(
-                close_btn, callback_data=f"anime_close, {message.from_user.id}"
-            )
-        ],
-    ]
-
-    update.effective_message.reply_photo(
-        photo=img,
-        caption=caption,
-        parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(buttons),
-        disable_web_page_preview=False,
-    )
-    progress_message.delete()
+    update.effective_message.reply_text("Admins cache refreshed!")
 
 
 @run_async
-def upcoming(update: Update, context: CallbackContext):
-    jikan = jikanpy.jikan.Jikan()
-    upcomin = jikan.top("anime", page=1, subtype="upcoming")
+@connection_status
+@bot_admin
+@can_promote
+@user_admin
+def set_title(update: Update, context: CallbackContext):
+    bot = context.bot
+    args = context.args
 
-    upcoming_list = [entry["title"] for entry in upcomin["top"]]
-    upcoming_message = ""
-
-    for entry_num in range(len(upcoming_list)):
-        if entry_num == 10:
-            break
-        upcoming_message += f"{entry_num + 1}. {upcoming_list[entry_num]}\n"
-
-    update.effective_message.reply_text(upcoming_message)
-
-
-def site_search(update: Update, context: CallbackContext, site: str):
+    chat = update.effective_chat
     message = update.effective_message
-    args = message.text.strip().split(" ", 1)
-    more_results = True
 
+    user_id, title = extract_user_and_text(message, args)
     try:
-        search_query = args[1]
-    except IndexError:
-        message.reply_text("Give something to search")
+        user_member = chat.get_member(user_id)
+    except:
         return
 
-    if site == "TPX":
-        search_url = f"https://hindisub.com/?s={search_query}"
-        html_text = requests.get(search_url).text
-        soup = bs4.BeautifulSoup(html_text, "html.parser")
-        search_result = soup.find_all("h2", {"class": "post-title"})
+    if not user_id:
+        message.reply_text(
+            "You don't seem to be referring to a user or the ID specified is incorrect.."
+        )
+        return
 
-        if search_result:
-            result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official \n"
-            for entry in search_result:
-                post_link = "https://hindisub.com/" + entry.a["href"]
-                post_name = html.escape(entry.text)
-                result += f"• <a href='{post_link}'>{post_name}</a>\n"
+    if user_member.status == "creator":
+        message.reply_text(
+            "This person CREATED the chat, how can i set custom title for him?"
+        )
+        return
+
+    if user_member.status != "administrator":
+        message.reply_text(
+            "Can't set title for non-admins!\nPromote them first to set custom title!"
+        )
+        return
+
+    if user_id == bot.id:
+        message.reply_text(
+            "I can't set my own title myself! Get the one who made me admin to do it for me."
+        )
+        return
+
+    if not title:
+        message.reply_text("Setting blank title doesn't do anything!")
+        return
+
+    if len(title) > 16:
+        message.reply_text(
+            "The title length is longer than 16 characters.\nTruncating it to 16 characters."
+        )
+
+    try:
+        bot.setChatAdministratorCustomTitle(chat.id, user_id, title)
+    except BadRequest:
+        message.reply_text("I can't set custom title for admins that I didn't promote!")
+        return
+
+    bot.sendMessage(
+        chat.id,
+        f"Sucessfully set title for <code>{user_member.user.first_name or user_id}</code> "
+        f"to <code>{html.escape(title[:16])}</code>!",
+        parse_mode=ParseMode.HTML,
+    )
+
+
+@run_async
+@bot_admin
+@can_pin
+@user_admin
+@loggable
+def pin(update: Update, context: CallbackContext) -> str:
+    bot = context.bot
+    args = context.args
+
+    user = update.effective_user
+    chat = update.effective_chat
+
+    is_group = chat.type != "private" and chat.type != "channel"
+    prev_message = update.effective_message.reply_to_message
+
+    is_silent = True
+    if len(args) >= 1:
+        is_silent = not (
+            args[0].lower() == "notify"
+            or args[0].lower() == "loud"
+            or args[0].lower() == "violent"
+        )
+
+    if prev_message and is_group:
+        try:
+            bot.pinChatMessage(
+                chat.id, prev_message.message_id, disable_notification=is_silent
+            )
+        except BadRequest as excp:
+            if excp.message == "Chat_not_modified":
+                pass
+            else:
+                raise
+        log_message = (
+            f"<b>{html.escape(chat.title)}:</b>\n"
+            f"#PINNED\n"
+            f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}"
+        )
+
+        return log_message
+
+
+@run_async
+@bot_admin
+@can_pin
+@user_admin
+@loggable
+def unpin(update: Update, context: CallbackContext) -> str:
+    bot = context.bot
+    chat = update.effective_chat
+    user = update.effective_user
+
+    try:
+        bot.unpinChatMessage(chat.id)
+    except BadRequest as excp:
+        if excp.message == "Chat_not_modified":
+            pass
         else:
-            more_results = False
-            result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official"
+            raise
 
-    elif site == "DVanime":
-        search_url = f"https://dvanime.com/?s={search_query}"
-        html_text = requests.get(search_url).text
-        soup = bs4.BeautifulSoup(html_text, "html.parser")
-        search_result = soup.find_all("h2", {"class": "title"})
+    log_message = (
+        f"<b>{html.escape(chat.title)}:</b>\n"
+        f"#UNPINNED\n"
+        f"<b>Admin:</b> {mention_html(user.id, html.escape(user.first_name))}"
+    )
 
-        result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DVanime</code>: \n"
-        for entry in search_result:
+    return log_message
 
-            if entry.text.strip() == "Nothing Found":
-                result = f"<b>No Result</b> <code>{html.escape(search_query)}</code> <b>ON</b> <code>DVAnime</code>"
-                more_results = False
-                break
 
-            post_link = entry.a["href"]
-            post_name = html.escape(entry.text.strip())
-            result += f"• <a href='{post_link}'>{post_name}</a>\n"
+@run_async
+@bot_admin
+@user_admin
+@connection_status
+def invite(update: Update, context: CallbackContext):
+    bot = context.bot
+    chat = update.effective_chat
 
-    buttons = [[InlineKeyboardButton("Check ALL Anime", url=search_url)]]
-
-    if more_results:
-        message.reply_text(
-            result,
-            parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True,
-        )
+    if chat.username:
+        update.effective_message.reply_text(f"https://t.me/{chat.username}")
+    elif chat.type in [chat.SUPERGROUP, chat.CHANNEL]:
+        bot_member = chat.get_member(bot.id)
+        if bot_member.can_invite_users:
+            invitelink = bot.exportChatInviteLink(chat.id)
+            update.effective_message.reply_text(invitelink)
+        else:
+            update.effective_message.reply_text(
+                "I don't have access to the invite link, try changing my permissions!"
+            )
     else:
-        message.reply_text(
-            result, parse_mode=ParseMode.HTML, disable_web_page_preview=True
+        update.effective_message.reply_text(
+            "I can only give you invite links for supergroups and channels, sorry!"
         )
 
 
 @run_async
-def tpx(update: Update, context: CallbackContext):
-    site_search(update, context, "TPX")
+@connection_status
+def adminlist(update, context):
+    chat = update.effective_chat  # type: Optional[Chat]
+    user = update.effective_user  # type: Optional[User]
+    args = context.args
+    bot = context.bot
+
+    if update.effective_message.chat.type == "private":
+        send_message(update.effective_message, "This command only works in Groups.")
+        return
+
+    chat = update.effective_chat
+    chat_id = update.effective_chat.id
+    chat_name = update.effective_message.chat.title
+
+    try:
+        msg = update.effective_message.reply_text(
+            "Fetching group admins...", parse_mode=ParseMode.HTML
+        )
+    except BadRequest:
+        msg = update.effective_message.reply_text(
+            "Fetching group admins...", quote=False, parse_mode=ParseMode.HTML
+        )
+
+    administrators = bot.getChatAdministrators(chat_id)
+    text = "╭ Admins iN <b>{}</b>:".format(html.escape(update.effective_chat.title))
+
+    bot_admin_list = []
+
+    for admin in administrators:
+        user = admin.user
+        status = admin.status
+        custom_title = admin.custom_title
+
+        if user.first_name == "":
+            name = "⊢ Deleted Account"
+        else:
+            name = "{}".format(
+                mention_html(
+                    user.id, html.escape(user.first_name + " " + (user.last_name or ""))
+                )
+            )
+
+        if user.is_bot:
+            bot_admin_list.append(name)
+            administrators.remove(admin)
+            continue
+
+        # if user.username:
+        #    name = escape_markdown("@" + user.username)
+        if status == "creator":
+            text += "\n ⊢ Creator:"
+            text += "\n<code> • </code>{}\n".format(name)
+
+            if custom_title:
+                text += f"<code> ┗━ {html.escape(custom_title)}</code>\n"
+
+    text += "\n  Admins:"
+
+    custom_admin_list = {}
+    normal_admin_list = []
+
+    for admin in administrators:
+        user = admin.user
+        status = admin.status
+        custom_title = admin.custom_title
+
+        if user.first_name == "":
+            name = "⊢ Deleted Account"
+        else:
+            name = "{}".format(
+                mention_html(
+                    user.id, html.escape(user.first_name + " " + (user.last_name or ""))
+                )
+            )
+        # if user.username:
+        #    name = escape_markdown("@" + user.username)
+        if status == "administrator":
+            if custom_title:
+                try:
+                    custom_admin_list[custom_title].append(name)
+                except KeyError:
+                    custom_admin_list.update({custom_title: [name]})
+            else:
+                normal_admin_list.append(name)
+
+    for admin in normal_admin_list:
+        text += "\n<code> ⊢ </code>{}".format(admin)
+
+    for admin_group in custom_admin_list.copy():
+        if len(custom_admin_list[admin_group]) == 1:
+            text += "\n<code> ⊢ </code>{} | <code>{}</code>".format(
+                custom_admin_list[admin_group][0], html.escape(admin_group)
+            )
+            custom_admin_list.pop(admin_group)
+
+    text += "\n"
+    for admin_group, value in custom_admin_list.items():
+        text += "\n⊢ <code>{}</code>".format(admin_group)
+        for admin in value:
+            text += "\n<code> ⊢ </code>{}".format(admin)
+        text += "\n"
+
+    text += "\n  Bots:"
+    for each_bot in bot_admin_list:
+        text += "\n<code>╰ </code>{}".format(each_bot)
+
+    try:
+        msg.edit_text(text, parse_mode=ParseMode.HTML)
+    except BadRequest:  # if original message is deleted
+        return
+
+    
 
 
-@run_async
-def dv(update: Update, context: CallbackContext):
-    site_search(update, context, "DVanime")
+ADMINLIST_HANDLER = DisableAbleCommandHandler("admins", adminlist)
+
+PIN_HANDLER = CommandHandler("pin", pin, filters=Filters.group)
+UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group)
+
+INVITE_HANDLER = DisableAbleCommandHandler("invitelink", invite)
+
+PROMOTE_HANDLER = DisableAbleCommandHandler("promote", promote)
+DEMOTE_HANDLER = DisableAbleCommandHandler("demote", demote)
+
+SET_TITLE_HANDLER = CommandHandler("title", set_title)
+ADMIN_REFRESH_HANDLER = CommandHandler(
+    "admincache", refresh_admin, filters=Filters.group
+)
+
+dispatcher.add_handler(ADMINLIST_HANDLER)
+dispatcher.add_handler(PIN_HANDLER)
+dispatcher.add_handler(UNPIN_HANDLER)
+dispatcher.add_handler(INVITE_HANDLER)
+dispatcher.add_handler(PROMOTE_HANDLER)
+dispatcher.add_handler(DEMOTE_HANDLER)
+dispatcher.add_handler(SET_TITLE_HANDLER)
+dispatcher.add_handler(ADMIN_REFRESH_HANDLER)
 
 
-__help__ = """
-Get information about anime, manga or characters from [AniList](anilist.co).
-
-*Available commands:*
-
- • /anime returns information about the anime.
- • /character returns information about the character.
- • /manga returns information about the manga.
- • /user returns information about a MyAnimeList user.
- • /upcoming returns a list of new anime in the upcoming seasons.
- • /dv search an anime on dvanime.com
- • /airing returns anime airing info.
-
- """
-
-ANIME_HANDLER = DisableAbleCommandHandler("anime", anime)
-AIRING_HANDLER = DisableAbleCommandHandler("airing", airing)
-CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
-MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
-USER_HANDLER = DisableAbleCommandHandler("user", user)
-UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
-TPX_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", tpx)
-DV_SEARCH_HANDLER = DisableAbleCommandHandler("dv", dv)
-
-dispatcher.add_handler(ANIME_HANDLER)
-dispatcher.add_handler(CHARACTER_HANDLER)
-dispatcher.add_handler(MANGA_HANDLER)
-dispatcher.add_handler(AIRING_HANDLER)
-dispatcher.add_handler(USER_HANDLER)
-dispatcher.add_handler(TPX_SEARCH_HANDLER)
-dispatcher.add_handler(DV_SEARCH_HANDLER)
-dispatcher.add_handler(UPCOMING_HANDLER)
-
-__mod_name__ = "ANiME"
 __command_list__ = [
-    "anime",
-    "manga",
-    "character",
-    "user",
-    "upcoming",
-    "tpx",
-    "airing",
-    "dv",
+    "adminlist",
+    "admins",
+    "invitelink",
+    "promote",
+    "demote",
+    "admincache",
 ]
 __handlers__ = [
-    ANIME_HANDLER,
-    CHARACTER_HANDLER,
-    MANGA_HANDLER,
-    USER_HANDLER,
-    UPCOMING_HANDLER,
-    TPX_SEARCH_HANDLER,
-    DV_SEARCH_HANDLER,
-    AIRING_HANDLER,
+    ADMINLIST_HANDLER,
+    PIN_HANDLER,
+    UNPIN_HANDLER,
+    INVITE_HANDLER,
+    PROMOTE_HANDLER,
+    DEMOTE_HANDLER,
+    SET_TITLE_HANDLER,
+    ADMIN_REFRESH_HANDLER,
 ]
+
+
+
+
+
+__mod_name__ = "ADMiN"
+
+__help__ = """
+
+ • /admins list of admins
+
+ *Admins ONLY:*
+ • /pin : pins the message
+ 
+ • /unpin : unpins the currently pinned message
+ 
+ • /invitelink : gets invitelink
+ 
+ • /promote : promotes the user
+ 
+ • /demote : demotes the user
+ 
+ • /title : set a custom title for admin
+ 
+ • /admincache : force refresh the admins list
+ 
+ 
+"""
