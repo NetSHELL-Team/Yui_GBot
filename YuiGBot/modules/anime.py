@@ -475,33 +475,33 @@ def site_search(update: Update, context: CallbackContext, site: str):
         message.reply_text("Give something to search")
         return
 
-    if site == "TPX":
-        search_url = f"https://hindisub.com/?s={search_query}"
+    if site == "PlyTon":
+        search_url = f"https://www.plyton.in/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
         search_result = soup.find_all("h2", {"class": "post-title"})
 
         if search_result:
-            result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official \n"
+            result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @plyton_team \n"
             for entry in search_result:
-                post_link = "https://hindisub.com/" + entry.a["href"]
+                post_link = "https://www.plyton.in/" + entry.a["href"]
                 post_name = html.escape(entry.text)
                 result += f"• <a href='{post_link}'>{post_name}</a>\n"
         else:
             more_results = False
-            result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official"
+            result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> @plyton_team"
 
-    elif site == "DVanime":
+    elif site == "DVAnime":
         search_url = f"https://dvanime.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
         search_result = soup.find_all("h2", {"class": "title"})
 
-        result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DVanime</code>: \n"
+        result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DvAnime</code>: \n"
         for entry in search_result:
 
             if entry.text.strip() == "Nothing Found":
-                result = f"<b>No Result</b> <code>{html.escape(search_query)}</code> <b>ON</b> <code>DVAnime</code>"
+                result = f"<b>No Result</b> <code>{html.escape(search_query)}</code> <b>ON</b> <code>DvAnime</code>"
                 more_results = False
                 break
 
@@ -526,7 +526,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
 
 @run_async
 def tpx(update: Update, context: CallbackContext):
-    site_search(update, context, "TPX")
+    site_search(update, context, "PT")
 
 
 @run_async
@@ -555,7 +555,7 @@ CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
 MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
 USER_HANDLER = DisableAbleCommandHandler("user", user)
 UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
-TPX_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", tpx)
+PT_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", pt)
 DV_SEARCH_HANDLER = DisableAbleCommandHandler("dv", dv)
 
 dispatcher.add_handler(ANIME_HANDLER)
@@ -563,7 +563,7 @@ dispatcher.add_handler(CHARACTER_HANDLER)
 dispatcher.add_handler(MANGA_HANDLER)
 dispatcher.add_handler(AIRING_HANDLER)
 dispatcher.add_handler(USER_HANDLER)
-dispatcher.add_handler(TPX_SEARCH_HANDLER)
+dispatcher.add_handler(PT_SEARCH_HANDLER)
 dispatcher.add_handler(DV_SEARCH_HANDLER)
 dispatcher.add_handler(UPCOMING_HANDLER)
 
