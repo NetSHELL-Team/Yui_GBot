@@ -555,7 +555,7 @@ CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
 MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
 USER_HANDLER = DisableAbleCommandHandler("user", user)
 UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
-PT_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", pt)
+PT_SEARCH_HANDLER = DisableAbleCommandHandler("pt", pt)
 DV_SEARCH_HANDLER = DisableAbleCommandHandler("dv", dv)
 
 dispatcher.add_handler(ANIME_HANDLER)
