@@ -525,7 +525,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
 
 
 @run_async
-def tpx(update: Update, context: CallbackContext):
+def pt(update: Update, context: CallbackContext):
     site_search(update, context, "PT")
 
 
