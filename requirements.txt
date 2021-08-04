@@ -5,7 +5,7 @@ bleach==3.1.5
 cachetools==4.1.1
 coffeehouse
 CurrencyConverter
-emoji==1.0.0
+emoji==1.4.2
 feedparser==6.0.0b3
 future==0.18.2
 geopy==2.0.0
