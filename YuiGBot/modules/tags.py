@@ -44,7 +44,12 @@ __help__ = """
 
 
 
+
+#Cradit This module
+
+# https://github.com/HuntingBots - pro admi
 # https://stackoverflow.com/questions/63781592/what-should-i-do-if-i-want-tag-all-members-of-a-group-in-telegram-python-bot
 # https://docs.telethon.dev/en/latest/modules/client.html
+# https://tl.telethon.dev/methods/channels/get_participants.html
 
 # I0BOZXRfU0hFTEwgUHJvamVjdCAjQFlVaV9HQm90IChCWSAtIEBHQm90X05ldHdvcmsp
