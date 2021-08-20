@@ -45,5 +45,6 @@ __help__ = """
 
 
 # https://stackoverflow.com/questions/63781592/what-should-i-do-if-i-want-tag-all-members-of-a-group-in-telegram-python-bot
+# https://docs.telethon.dev/en/latest/modules/client.html
 
 # I0BOZXRfU0hFTEwgUHJvamVjdCAjQFlVaV9HQm90IChCWSAtIEBHQm90X05ldHdvcmsp
