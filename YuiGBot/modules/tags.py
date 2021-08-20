@@ -8,7 +8,7 @@ from telethon import TelegramClient
 
 
 
-@Yui(pattern="^/vctag ?(.*)")
+@Yui(pattern="^/tagall ?(.*)")
 async def _(event):
     if event.fwd_from:
         return
@@ -38,7 +38,7 @@ async def _(event):
 
 __mod_name__ = "VC-Tag"
 __help__ = """
-- /vctag : Tag everyone in a chat
+- /tagall : Tag everyone in a chat
 - /tagadmin tag the group admin
 """
 
