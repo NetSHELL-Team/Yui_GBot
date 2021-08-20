@@ -3,6 +3,23 @@ from telethon import events
 from telethon.tl.types import ChannelParticipantsAdmins
 from YuiGBot import telethn
 from YuiGBot.events import register as Yui
+from telethon import TelegramClient
+
+
+client = TelegramClient(name, api_id, api_hash)
+
+async def main():
+    # Now you can use all client methods listed below, like for example...
+    await client.send_message('me', 'Hello to myself!')
+
+with client:
+    client.loop.run_until_complete(main())
+
+
+
+
+
+
 
 
 @Yui(pattern="^/vctag ?(.*)")
@@ -23,7 +40,7 @@ async def _(event):
         return
     mentions = " Admins Kha Ho !!! "
     chat = await event.get_input_chat()
-    async for x in borg.iter_participants(chat, filter=ChannelParticipantsAdmins):
+    async for x in telethn.iter_participants(chat, filter=ChannelParticipantsAdmins):
         mentions += f" \n [{x.first_name}](tg://user?id={x.id})"
     reply_message = None
     if event.reply_to_msg_id:
