@@ -3,6 +3,8 @@ import time
 import re
 from sys import argv
 from typing import Optional
+import YuiGBot.modules.sql.users_sql as sql #import pgsql data
+
 
 from YuiGBot import (
     ALLOW_EXCL,
@@ -79,6 +81,11 @@ i am a group management bot I can help you to manage your group
 You can find my list of available commands with /help
 
 Made By- [GBot_NETᗯOᖇK](https://t.me/GBot_Network)
+
+╔═.♥.══════════════════╗
+• `{}` *User, ON* `{}` *Groups*
+╚══════════════════.♥.═╝
+
 
 """
 
@@ -208,7 +215,14 @@ def start(update: Update, context: CallbackContext):
             update.effective_message.reply_photo(
                 YuiGBot_IMG,
                 PM_START_TEXT.format(
-                    escape_markdown(first_name), escape_markdown(context.bot.first_name)
+                    escape_markdown(first_name), 
+                    escape_markdown(context.bot.first_name),
+                    sql.num_users(),  #import pgsql user                             
+                    sql.num_chats(),  #import pgsql group
+                    
+                    
+                    
+                    
                 ),
                 parse_mode=ParseMode.MARKDOWN,
                 disable_web_page_preview=True,
