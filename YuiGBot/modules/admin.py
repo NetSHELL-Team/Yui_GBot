@@ -1,4 +1,12 @@
 import html
+import asyncio
+
+from telethon import events
+from telethon.tl.types import ChannelParticipantsAdmins
+from YuiGBot import telethn
+from YuiGBot.events import register as Yui
+from telethon import TelegramClient
+
 
 from telegram import ParseMode, Update
 from telegram.error import BadRequest
@@ -23,6 +31,21 @@ from YuiGBot.modules.helper_funcs.extraction import (
 from YuiGBot.modules.log_channel import loggable
 from YuiGBot.modules.helper_funcs.alternate import send_message
 
+@Yui(pattern="^/tagadmin ?(.*)")
+async def _(event):
+    if event.fwd_from:
+        return
+    mentions = " Admins Kha Ho !!! "
+    chat = await event.get_input_chat()
+    async for x in telethn.iter_participants(chat, filter=ChannelParticipantsAdmins):
+        mentions += f" \n [{x.first_name}](tg://user?id={x.id})"
+    reply_message = None
+    if event.reply_to_msg_id:
+        reply_message = await event.get_reply_message()
+        await reply_message.reply(mentions)
+    else:
+        await event.reply(mentions)
+    await event.delete()
 
 @run_async
 @connection_status
@@ -535,6 +558,8 @@ __help__ = """
  • /title : set a custom title for admin
  
  • /admincache : force refresh the admins list
+ 
+ • /tagadmin tag the group admin
  
  
 """
