@@ -11,7 +11,7 @@ from YuiGBot.modules.disable import DisableAbleCommandHandler
 
 sites_list = {
     "Telegram": "https://api.telegram.org",
-    "APi Core": "https://api.plyton.in",
+    "APi Core": "https://plyton.in",
     "PlyTon": "https://www.plyton.in/",
     "Jikan": "https://api.jikan.moe/v3",
 }
