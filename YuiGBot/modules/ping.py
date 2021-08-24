@@ -95,7 +95,7 @@ def sys(update: Update, context: CallbackContext):
     pinged_list.insert(2, "")
     uptime = get_readable_time((time.time() - StartTime))
 
-    reply_msg = "Server Stats\n"
+    reply_msg = "Server Status\n"
     reply_msg += "\n".join(pinged_list)
     reply_msg += "\n<b>SERVER ONLiNE:</b> <code>{}</code>".format(uptime)
 
@@ -108,7 +108,7 @@ PING_HANDLER = DisableAbleCommandHandler("ping", ping)
 SYS_HANDLER = DisableAbleCommandHandler("sys", sys)
 
 dispatcher.add_handler(PING_HANDLER)
-dispatcher.add_handler(PINGALL_HANDLER)
+dispatcher.add_handler(SYS_HANDLER)
 
 __command_list__ = ["ping", "sys"]
 __handlers__ = [PING_HANDLER, SYS_HANDLER]
