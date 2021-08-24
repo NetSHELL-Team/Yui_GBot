@@ -11,8 +11,8 @@ from YuiGBot.modules.disable import DisableAbleCommandHandler
 
 sites_list = {
     "Telegram": "https://api.telegram.org",
-    "Kaizoku": "https://animekaizoku.com",
-    "Kayo": "https://animekayo.com",
+    "APi Core": "https://api.plyton.in",
+    "PlyTon": "https://www.plyton.in/",
     "Jikan": "https://api.jikan.moe/v3",
 }
 
@@ -58,7 +58,7 @@ def ping_func(to_ping: List[str]) -> List[str]:
 
         pinged_site = f"<b>{each_ping}</b>"
 
-        if each_ping == "Kaizoku" or each_ping == "Kayo":
+        if each_ping == "APi Core" or each_ping == "PlyTon":
             pinged_site = f'<a href="{sites_list[each_ping]}">{each_ping}</a>'
             ping_time = f"<code>{ping_time} (Status: {r.status_code})</code>"
 
@@ -80,24 +80,24 @@ def ping(update: Update, context: CallbackContext):
     uptime = get_readable_time((time.time() - StartTime))
 
     message.edit_text(
-        "PONG!!\n"
-        "<b>Time Taken:</b> <code>{}</code>\n"
-        "<b>Service uptime:</b> <code>{}</code>".format(telegram_ping, uptime),
+        "STATUS!!\n"
+        "<b>PiNG:</b> <code>{}</code>\n"
+        "<b>SERVER ONLiNE:</b> <code>{}</code>".format(telegram_ping, uptime),
         parse_mode=ParseMode.HTML,
     )
 
 
 @run_async
 @sudo_plus
-def pingall(update: Update, context: CallbackContext):
-    to_ping = ["Kaizoku", "Kayo", "Telegram", "Jikan"]
+def sys(update: Update, context: CallbackContext):
+    to_ping = ["APi Core", "PlyTon", "Telegram", "Jikan"]
     pinged_list = ping_func(to_ping)
     pinged_list.insert(2, "")
     uptime = get_readable_time((time.time() - StartTime))
 
-    reply_msg = "⏱Ping results are:\n"
+    reply_msg = "Server Stats\n"
     reply_msg += "\n".join(pinged_list)
-    reply_msg += "\n<b>Service uptime:</b> <code>{}</code>".format(uptime)
+    reply_msg += "\n<b>SERVER ONLiNE:</b> <code>{}</code>".format(uptime)
 
     update.effective_message.reply_text(
         reply_msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True
@@ -105,13 +105,13 @@ def pingall(update: Update, context: CallbackContext):
 
 
 PING_HANDLER = DisableAbleCommandHandler("ping", ping)
-PINGALL_HANDLER = DisableAbleCommandHandler("pingall", pingall)
+SYS_HANDLER = DisableAbleCommandHandler("sys", sys)
 
 dispatcher.add_handler(PING_HANDLER)
 dispatcher.add_handler(PINGALL_HANDLER)
 
-__command_list__ = ["ping", "pingall"]
-__handlers__ = [PING_HANDLER, PINGALL_HANDLER]
+__command_list__ = ["ping", "sys"]
+__handlers__ = [PING_HANDLER, SYS_HANDLER]
 
 
 
