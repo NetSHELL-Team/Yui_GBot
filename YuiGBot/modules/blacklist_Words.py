@@ -444,7 +444,7 @@ def __chat_settings__(chat_id, user_id):
 
 
 def __stats__():
-    return "╰ {} Blacklist Triggers, Across {} Chats.".format(
+    return "┝ {} Blacklist Triggers, Across {} Chats.".format(
         sql.num_blacklist_filters(), sql.num_blacklist_filter_chats()
     )
 
