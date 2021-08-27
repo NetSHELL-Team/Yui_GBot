@@ -1,6 +1,4 @@
-import asyncio
 from asyncio import sleep
-from telethon import TelegramClient
 
 from telethon import events
 from telethon.errors import ChatAdminRequiredError, UserAdminInvalidError
@@ -67,7 +65,7 @@ async def zombies(event):
                 await sleep(1)
         if del_u > 0:
             del_status = f"Found **{del_u}** Zombies In This Group.\
-            \nClean Them By Using - `/zombies clean`"
+            \nClean Them By Using :\n👉 `/zombies clean`"
         await find_zombies.edit(del_status)
         return
 
@@ -112,5 +110,3 @@ async def zombies(event):
         \n`{del_a}` Zombie Admin Accounts Are Not Removed!"
 
     await cleaning_zombies.edit(del_status)
-
-__mod_name__ = "Zombies"
