@@ -17,7 +17,7 @@ from YuiGBot import (
     TIGERS,
     WOLVES,
     dispatcher,
-)
+
 
 
 
@@ -28,7 +28,8 @@ import YuiGBot.modules.sql.welcome_sql as sql
 import YuiGBot.modules.sql.global_bans_sql as gbansql
 import YuiGBot.modules.sql.users_sql as userssql
 
-from YuiGBot import dispatcher, OWNER_ID, LOGGER, SUDO_USERS, SUPPORT_USERS
+# from YuiGBot import dispatcher, OWNER_ID, LOGGER, SUDO_USERS, SUPPORT_USERS
+    
 from YuiGBot.modules.helper_funcs.chat_status import user_admin, can_delete, is_user_ban_protected
 from YuiGBot.modules.helper_funcs.misc import build_keyboard, revert_buttons, send_to_list
 from YuiGBot.modules.helper_funcs.msg_types import get_welcome_type
