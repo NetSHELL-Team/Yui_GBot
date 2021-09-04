@@ -16,7 +16,7 @@ Credits - [DEVLOPER](https://telegram.me/Net_SHELL)
 [![Open Source Love](https://badges.frapsoft.com/os/v3/open-source.png)](https://github.com/ellerbrock/open-source-badges/)
 
 
-A Modular Telegram Python bot running on python3.8x with a sqlalchemy database 
+A Modular Telegram Python bot running on python3.9x with a sqlalchemy database 
 
 Can be found on telegram as [Yui_GBot](https://t.me/Yui_GBot).
 
@@ -27,7 +27,7 @@ The Support group can be reached out to at [ＹＵｉ ◈ Sᴜᴘᴘᴏʀᴛ](ht
 
 <b> There are too many bugs in this yui repo and this repo has not been completed yet kang your own risk & your time waste 🤣 </b>
 
-injoy Stable Version of Linux Ubontu 14,16,18,20 & Centos7 😎
+injoy Stable Version of Linux Ubontu 14,16,18,20,21 & Centos7 & CO8 & CO8 Stream 😎
 
 Any other questions to Join  [ＹＵｉ ◈ Sᴜᴘᴘᴏʀᴛ](https://t.me/Yui_Official)
 
