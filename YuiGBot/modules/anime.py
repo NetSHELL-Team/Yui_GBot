@@ -459,7 +459,9 @@ def upcoming(update: Update, context: CallbackContext):
         
         
         
-
+@run_async
+def tpx(update: Update, context: CallbackContext):
+    site_search(update, context, "TPX")
 
 
 
