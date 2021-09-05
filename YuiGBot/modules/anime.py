@@ -375,7 +375,9 @@ def upcoming(update: Update, context: CallbackContext):
             break
         upcoming_message += f"{entry_num + 1}. {upcoming_list[entry_num]}\n"
 
-    update.effective_message.reply_text(upcoming_message)   
+    update.effective_message.reply_text(upcoming_message),
+    
+    )
     
     
     
