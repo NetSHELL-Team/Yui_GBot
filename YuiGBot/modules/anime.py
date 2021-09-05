@@ -375,6 +375,11 @@ def upcoming(update: Update, context: CallbackContext):
         upcoming_message += f"{entry_num + 1}. {upcoming_list[entry_num]}\n"
 
     update.effective_message.reply_text(upcoming_message)
+    
+    
+    
+    #website search anime
+    
 
 
 def site_search(update: Update, context: CallbackContext, site: str):
@@ -385,36 +390,22 @@ def site_search(update: Update, context: CallbackContext, site: str):
     try:
         search_query = args[1]
     except IndexError:
-        message.reply_text("Give something to search")
+        message.reply_text("Give Something To Search")
         return
 
-    if site == "TPX":
-        search_url = f"https://hindisub.com/?s={search_query}"
-        html_text = requests.get(search_url).text
-        soup = bs4.BeautifulSoup(html_text, "html.parser")
-        search_result = soup.find_all("h2", {"class": "post-title"})
+    
 
-        if search_result:
-            result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official \n"
-            for entry in search_result:
-                post_link = "https://hindisub.com/" + entry.a["href"]
-                post_name = html.escape(entry.text)
-                result += f"• <a href='{post_link}'>{post_name}</a>\n"
-        else:
-            more_results = False
-            result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> @teamprojectx_official"
-
-    elif site == "DVanime":
+    elif site == "DvAnime":
         search_url = f"https://dvanime.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
         search_result = soup.find_all("h2", {"class": "title"})
 
-        result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DvAnime</code>: \n"
+        result = f"<b>Search Results FOR</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DvAnime</code>: \n"
         for entry in search_result:
 
             if entry.text.strip() == "Nothing Found":
-                result = f"<b>No result found for</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DVanime</code>"
+                result = f"<b>No Result Found FOR</b> <code>{html.escape(search_query)}</code> <b>on</b> <code>DvAnime</code>"
                 more_results = False
                 break
 
@@ -422,29 +413,17 @@ def site_search(update: Update, context: CallbackContext, site: str):
             post_name = html.escape(entry.text.strip())
             result += f"• <a href='{post_link}'>{post_name}</a>\n"
 
-    buttons = [[InlineKeyboardButton("See all results", url=search_url)]]
+    buttons = [[InlineKeyboardButton("See ALL Results", url=search_url)]])
 
-    if more_results:
-        message.reply_text(
-            result,
-            parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True,
-        )
-    else:
-        message.reply_text(
-            result, parse_mode=ParseMode.HTML, disable_web_page_preview=True
-        )
+        
 
 
-@run_async
-def tpx(update: Update, context: CallbackContext):
-    site_search(update, context, "TPX")
+
 
 
 @run_async
 def dv(update: Update, context: CallbackContext):
-    site_search(update, context, "DVanime")
+    site_search(update, context, "DvAnime")
 
 
 __help__ = """
@@ -456,7 +435,6 @@ Get information about anime, manga or characters from [AniList].
  • /character  returns information about the character.
  • /manga  returns information about the manga.
  • /upcoming returns a list of new anime in the upcoming seasons.
- • /tpx  search an anime on tpx
  • /dv  search an anime on dvanime.com
  • /airing  returns anime airing info.
 
@@ -467,14 +445,12 @@ AIRING_HANDLER = DisableAbleCommandHandler("airing", airing)
 CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
 MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
 UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
-TPX_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", tpx)
 DV_SEARCH_HANDLER = DisableAbleCommandHandler("dv", dv)
 
 dispatcher.add_handler(ANIME_HANDLER)
 dispatcher.add_handler(CHARACTER_HANDLER)
 dispatcher.add_handler(MANGA_HANDLER)
 dispatcher.add_handler(AIRING_HANDLER)
-dispatcher.add_handler(TPX_SEARCH_HANDLER)
 dispatcher.add_handler(DV_SEARCH_HANDLER)
 dispatcher.add_handler(UPCOMING_HANDLER)
 
@@ -484,7 +460,6 @@ __command_list__ = [
     "manga",
     "character",
     "upcoming",
-    "tpx",
     "airing",
     "dv",
 ]
@@ -493,7 +468,6 @@ __handlers__ = [
     CHARACTER_HANDLER,
     MANGA_HANDLER,
     UPCOMING_HANDLER,
-    TPX_SEARCH_HANDLER,
     DV_SEARCH_HANDLER,
     AIRING_HANDLER,
 ]
