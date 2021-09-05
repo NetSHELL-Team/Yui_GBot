@@ -353,7 +353,36 @@ def manga(update: Update, context: CallbackContext):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
 
-            
+     
+    
+    #upcoming
+    
+    
+    
+    
+    
+    
+ @run_async
+def upcoming(update: Update, context: CallbackContext):
+    jikan = jikanpy.jikan.Jikan()
+    upcomin = jikan.top("anime", page=1, subtype="upcoming")
+
+    upcoming_list = [entry["title"] for entry in upcomin["top"]]
+    upcoming_message = ""
+
+    for entry_num in range(len(upcoming_list)):
+        if entry_num == 10:
+            break
+        upcoming_message += f"{entry_num + 1}. {upcoming_list[entry_num]}\n"
+
+    update.effective_message.reply_text(upcoming_message)   
+    
+    
+    
+    
+    
+    
+    
             
 
 #remove anilist user load
