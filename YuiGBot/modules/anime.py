@@ -17,9 +17,9 @@ def shorten(description, info="anilist.co"):
     msg = ""
     if len(description) > 300:
         description = description[0:250] + "...."
-        msg += f"\n*Story PART* : _{description}_[Read More]({info})"
+        msg += f"\n*iNFO* : _{description}_[Read More]({info})"
     else:
-        msg += f"\n*Story PART* :_{description}_"
+        msg += f"\n*iNFO* :_{description}_"
     return msg
 
 
@@ -32,11 +32,11 @@ def t(milliseconds: int) -> str:
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + " Days, ") if days else "")
-        + ((str(hours) + " Hours, ") if hours else "")
-        + ((str(minutes) + " Minutes, ") if minutes else "")
-        + ((str(seconds) + " Seconds, ") if seconds else "")
-        + ((str(milliseconds) + " ms, ") if milliseconds else "")
+        ((str(days) + " D") if days else "")
+        + ((str(hours) + " H") if hours else "")
+        + ((str(minutes) + " M") if minutes else "")
+        + ((str(seconds) + " S") if seconds else "")
+        + ((str(milliseconds) + " ms") if milliseconds else "")
     )
     return tmp[:-2]
 
@@ -172,7 +172,7 @@ def airing(update: Update, context: CallbackContext):
     if response["nextAiringEpisode"]:
         time = response["nextAiringEpisode"]["timeUntilAiring"] * 1000
         time = t(time)
-        msg += f"\n┝ *Episode*: `{response['nextAiringEpisode']['episode']}`\n┝ *Airing In*: `{time}`"
+        msg += f"\n┝ *Episode*: `{response['nextAiringEpisode']['episode']}`\n╰ *Airing In*: `{time}`"
     else:
         msg += f"\n┝ *Episode*:{response['episodes']}\n╰ *Status*: `N/A`"
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
@@ -314,21 +314,21 @@ def manga(update: Update, context: CallbackContext):
             json.get("averageScore", False),
         )
         if title:
-            msg += f"*{title}*"
+            msg += f"╭ *{title}*"
             if title_native:
                 msg += f"(`{title_native}`)"
         if start_date:
-            msg += f"\n*Start Date* - `{start_date}`"
+            msg += f"\n┝ *Start Date* - `{start_date}`"
         if status:
-            msg += f"\n*Status* - `{status}`"
+            msg += f"\n┝ *Status* - `{status}`"
         if score:
-            msg += f"\n*Score* - `{score}`"
-        msg += "\n*Genres* - "
+            msg += f"\n┝ *Score* - `{score}`"
+        msg += "\n╰ *Genres* - "
         for x in json.get("genres", []):
             msg += f"{x}, "
         msg = msg[:-2]
         info = json["siteUrl"]
-        buttons = [[InlineKeyboardButton("More Info", url=info)]]
+        buttons = [[InlineKeyboardButton("Extra iNFO", url=info)]]
         image = json.get("bannerImage", False)
         msg += f"_{json.get('description', None)}_"
         if image:
