@@ -20,8 +20,8 @@ close_btn = "Close ❌"
 
 def shorten(description, info="anilist.co"):
     msg = ""
-    if len(description) > 700:
-        description = description[0:500] + "...."
+    if len(description) > 350:
+        description = description[0:200] + "...."
         msg += f"\n*Description*: _{description}_[Read More]({info})"
     else:
         msg += f"\n*Description*:_{description}_"
@@ -188,7 +188,7 @@ def anime(update: Update, context: CallbackContext):
     message = update.effective_message
     search = message.text.split(" ", 1)
     if len(search) == 1:
-        update.effective_message.reply_text("Format : /anime < anime name >")
+        update.effective_message.reply_text("Plese Enter The Anime Name")
         return
     else:
         search = search[1]
@@ -197,7 +197,7 @@ def anime(update: Update, context: CallbackContext):
         url, json={"query": anime_query, "variables": variables}
     ).json()
     if "errors" in json.keys():
-        update.effective_message.reply_text("Anime not found")
+        update.effective_message.reply_text("Anime Not Found")
         return
     if json:
         json = json["data"]["Media"]
@@ -358,98 +358,16 @@ def manga(update: Update, context: CallbackContext):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
 
+            
+            
 
-@run_async
-def user(update: Update, context: CallbackContext):
-    message = update.effective_message
-    args = message.text.strip().split(" ", 1)
+#remove anilist user load
 
-    try:
-        search_query = args[1]
-    except:
-        if message.reply_to_message:
-            search_query = message.reply_to_message.text
-        else:
-            update.effective_message.reply_text("Format : /user <username>")
-            return
 
-    jikan = jikanpy.jikan.Jikan()
-
-    try:
-        us = jikan.user(search_query)
-    except jikanpy.APIException:
-        update.effective_message.reply_text("Username not found.")
-        return
-
-    progress_message = update.effective_message.reply_text("Searching.... ")
-
-    date_format = "%Y-%m-%d"
-    if us["image_url"] is None:
-        img = "https://cdn.myanimelist.net/images/questionmark_50.gif"
-    else:
-        img = us["image_url"]
-
-    try:
-        user_birthday = datetime.datetime.fromisoformat(us["birthday"])
-        user_birthday_formatted = user_birthday.strftime(date_format)
-    except:
-        user_birthday_formatted = "Unknown"
-
-    user_joined_date = datetime.datetime.fromisoformat(us["joined"])
-    user_joined_date_formatted = user_joined_date.strftime(date_format)
-
-    for entity in us:
-        if us[entity] is None:
-            us[entity] = "Unknown"
-
-    about = us["about"].split(" ", 60)
-
-    try:
-        about.pop(60)
-    except IndexError:
-        pass
-
-    about_string = " ".join(about)
-    about_string = about_string.replace("<br>", "").strip().replace("\r\n", "\n")
-
-    caption = ""
-
-    caption += textwrap.dedent(
-        f"""
-    *Username*: [{us['username']}]({us['url']})
-
-    *Gender*: `{us['gender']}`
-    *Birthday*: `{user_birthday_formatted}`
-    *Joined*: `{user_joined_date_formatted}`
-    *Days wasted watching anime*: `{us['anime_stats']['days_watched']}`
-    *Days wasted reading manga*: `{us['manga_stats']['days_read']}`
-
-    """
-    )
-
-    caption += f"*About*: {about_string}"
-
-    buttons = [
-        [InlineKeyboardButton(info_btn, url=us["url"])],
-        [
-            InlineKeyboardButton(
-                close_btn, callback_data=f"anime_close, {message.from_user.id}"
-            )
-        ],
-    ]
-
-    update.effective_message.reply_photo(
-        photo=img,
-        caption=caption,
-        parse_mode=ParseMode.MARKDOWN,
-        reply_markup=InlineKeyboardMarkup(buttons),
-        disable_web_page_preview=False,
-    )
-    progress_message.delete()
 
 
 @run_async
-def upcoming(update: Update, context: CallbackContext):
+def upcomingimage = json(update: Update, context: CallbackContext):
     jikan = jikanpy.jikan.Jikan()
     upcomin = jikan.top("anime", page=1, subtype="upcoming")
 
@@ -535,18 +453,17 @@ def dv(update: Update, context: CallbackContext):
 
 
 __help__ = """
-Get information about anime, manga or characters from [AniList](anilist.co).
+Get information about anime, manga or characters from [AniList].
 
-*Available commands:*
+*Available Commands:*
 
- • `/anime <anime>`*:* returns information about the anime.
- • `/character <character>`*:* returns information about the character.
- • `/manga <manga>`*:* returns information about the manga.
- • `/user <user>`*:* returns information about a MyAnimeList user.
- • `/upcoming`*:* returns a list of new anime in the upcoming seasons.
- • `/tpx <anime>`*:* search an anime on animekaizoku.com
- • `/dv <anime>`*:* search an anime on dvanime.com
- • `/airing <anime>`*:* returns anime airing info.
+ • /anime <anime> returns information about the anime.
+ • /character  returns information about the character.
+ • /manga  returns information about the manga.
+ • /upcoming returns a list of new anime in the upcoming seasons.
+ • /tpx  search an anime on tpx
+ • /dv  search an anime on dvanime.com
+ • /airing  returns anime airing info.
 
  """
 
@@ -554,7 +471,6 @@ ANIME_HANDLER = DisableAbleCommandHandler("anime", anime)
 AIRING_HANDLER = DisableAbleCommandHandler("airing", airing)
 CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
 MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
-USER_HANDLER = DisableAbleCommandHandler("user", user)
 UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
 TPX_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", tpx)
 DV_SEARCH_HANDLER = DisableAbleCommandHandler("dv", dv)
@@ -563,7 +479,6 @@ dispatcher.add_handler(ANIME_HANDLER)
 dispatcher.add_handler(CHARACTER_HANDLER)
 dispatcher.add_handler(MANGA_HANDLER)
 dispatcher.add_handler(AIRING_HANDLER)
-dispatcher.add_handler(USER_HANDLER)
 dispatcher.add_handler(TPX_SEARCH_HANDLER)
 dispatcher.add_handler(DV_SEARCH_HANDLER)
 dispatcher.add_handler(UPCOMING_HANDLER)
@@ -573,7 +488,6 @@ __command_list__ = [
     "anime",
     "manga",
     "character",
-    "user",
     "upcoming",
     "tpx",
     "airing",
@@ -583,7 +497,6 @@ __handlers__ = [
     ANIME_HANDLER,
     CHARACTER_HANDLER,
     MANGA_HANDLER,
-    USER_HANDLER,
     UPCOMING_HANDLER,
     TPX_SEARCH_HANDLER,
     DV_SEARCH_HANDLER,
