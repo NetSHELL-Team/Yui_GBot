@@ -35,7 +35,7 @@ def t(milliseconds: int) -> str:
         ((str(days) + "D ") if days else "")
         + ((str(hours) + "H ") if hours else "")
         + ((str(minutes) + "M ") if minutes else "")
-        + ((str(seconds) + "S ") if seconds else "")
+        + ((str(seconds) + " S ") if seconds else "")
         + ((str(milliseconds) + " ms ") if milliseconds else "")
     )
     return tmp[:-2]
