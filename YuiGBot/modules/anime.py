@@ -367,7 +367,7 @@ def manga(update: Update, context: CallbackContext):
 
 
 @run_async
-def upcomingimage = json(update: Update, context: CallbackContext):
+def upcoming = json(update: Update, context: CallbackContext):
     jikan = jikanpy.jikan.Jikan()
     upcomin = jikan.top("anime", page=1, subtype="upcoming")
 
