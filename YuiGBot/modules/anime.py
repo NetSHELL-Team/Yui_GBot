@@ -395,7 +395,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
 
     
 
-    elif site == "DvAnime":
+    if site == "DvAnime":
         search_url = f"https://dvanime.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
@@ -409,9 +409,6 @@ def site_search(update: Update, context: CallbackContext, site: str):
                 more_results = False
                 break
 
-            post_link = entry.a["href"]
-            post_name = html.escape(entry.text.strip())
-            result += f"• <a href='{post_link}'>{post_name}</a>\n"
 
     buttons = [[InlineKeyboardButton("See ALL Results", url=search_url)]])
 
