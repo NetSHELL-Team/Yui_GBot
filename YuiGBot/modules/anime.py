@@ -32,11 +32,11 @@ def t(milliseconds: int) -> str:
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + " D") if days else "")
-        + ((str(hours) + " H") if hours else "")
-        + ((str(minutes) + " M") if minutes else "")
-        + ((str(seconds) + " S") if seconds else "")
-        + ((str(milliseconds) + " ms") if milliseconds else "")
+        ((str(days) + "D ") if days else "")
+        + ((str(hours) + "H ") if hours else "")
+        + ((str(minutes) + "M ") if minutes else "")
+        + ((str(seconds) + "S ") if seconds else "")
+        + ((str(milliseconds) + " ms ") if milliseconds else "")
     )
     return tmp[:-2]
 
