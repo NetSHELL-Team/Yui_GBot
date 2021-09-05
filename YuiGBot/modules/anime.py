@@ -463,7 +463,6 @@ Get information about anime, manga or characters from [AniList](anilist.co).
  • `/anime <anime>`*:* returns information about the anime.
  • `/character <character>`*:* returns information about the character.
  • `/manga <manga>`*:* returns information about the manga.
- • `/user <user>`*:* returns information about a MyAnimeList user.
  • `/upcoming`*:* returns a list of new anime in the upcoming seasons.
  • `/tpx <anime>`*:* search an anime on animekaizoku.com
  • `/dv <anime>`*:* search an anime on animekayo.com
@@ -474,7 +473,6 @@ ANIME_HANDLER = DisableAbleCommandHandler("anime", anime)
 AIRING_HANDLER = DisableAbleCommandHandler("airing", airing)
 CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
 MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
-USER_HANDLER = DisableAbleCommandHandler("user", user)
 UPCOMING_HANDLER = DisableAbleCommandHandler("upcoming", upcoming)
 TPX_SEARCH_HANDLER = DisableAbleCommandHandler("tpx", tpx)
 DV_SEARCH_HANDLER = DisableAbleCommandHandler("dv", dv)
@@ -483,7 +481,6 @@ dispatcher.add_handler(ANIME_HANDLER)
 dispatcher.add_handler(CHARACTER_HANDLER)
 dispatcher.add_handler(MANGA_HANDLER)
 dispatcher.add_handler(AIRING_HANDLER)
-dispatcher.add_handler(USER_HANDLER)
 dispatcher.add_handler(TPX_SEARCH_HANDLER)
 dispatcher.add_handler(DV_SEARCH_HANDLER)
 dispatcher.add_handler(UPCOMING_HANDLER)
@@ -493,7 +490,6 @@ __command_list__ = [
     "anime",
     "manga",
     "character",
-    "user",
     "upcoming",
     "tpx",
     "airing",
@@ -503,7 +499,6 @@ __handlers__ = [
     ANIME_HANDLER,
     CHARACTER_HANDLER,
     MANGA_HANDLER,
-    USER_HANDLER,
     UPCOMING_HANDLER,
     TPX_SEARCH_HANDLER,
     DV_SEARCH_HANDLER,
