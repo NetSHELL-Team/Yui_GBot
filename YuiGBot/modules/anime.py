@@ -10,21 +10,16 @@ from YuiGBot.modules.disable import DisableAbleCommandHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
 from telegram.ext import CallbackContext, run_async
 
-info_btn = "More Information"
-kaizoku_btn = "Kaizoku ☠️"
-kayo_btn = "Kayo 🏴‍☠️"
-prequel_btn = "⬅️ Prequel"
-sequel_btn = "Sequel ➡️"
-close_btn = "Close ❌"
+
 
 
 def shorten(description, info="anilist.co"):
     msg = ""
-    if len(description) > 350:
-        description = description[0:200] + "...."
-        msg += f"\n*Description*: _{description}_[Read More]({info})"
+    if len(description) > 300:
+        description = description[0:250] + "...."
+        msg += f"\n*Story PART* : _{description}_[Read More]({info})"
     else:
-        msg += f"\n*Description*:_{description}_"
+        msg += f"\n*Story PART* :_{description}_"
     return msg
 
 
@@ -166,20 +161,20 @@ def airing(update: Update, context: CallbackContext):
     search_str = message.text.split(" ", 1)
     if len(search_str) == 1:
         update.effective_message.reply_text(
-            "Tell Anime Name :) ( /airing <anime name>)"
+            " Tell Anime Name :) "
         )
         return
     variables = {"search": search_str[1]}
     response = requests.post(
         url, json={"query": airing_query, "variables": variables}
     ).json()["data"]["Media"]
-    msg = f"*Name*: *{response['title']['romaji']}*(`{response['title']['native']}`)\n*ID*: `{response['id']}`"
+    msg = f"╭ *Name*: *{response['title']['romaji']}*(`{response['title']['native']}`)\n┝ *ID*: `{response['id']}`"
     if response["nextAiringEpisode"]:
         time = response["nextAiringEpisode"]["timeUntilAiring"] * 1000
         time = t(time)
-        msg += f"\n*Episode*: `{response['nextAiringEpisode']['episode']}`\n*Airing In*: `{time}`"
+        msg += f"\n┝ *Episode*: `{response['nextAiringEpisode']['episode']}`\n┝ *Airing In*: `{time}`"
     else:
-        msg += f"\n*Episode*:{response['episodes']}\n*Status*: `N/A`"
+        msg += f"\n┝ *Episode*:{response['episodes']}\n╰ *Status*: `N/A`"
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 
