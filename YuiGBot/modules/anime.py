@@ -396,7 +396,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
  
 
 
-   elif site == "DvAnime":
+    if  site == "DvAnime":
         search_url = f"https://dvanime.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
@@ -421,7 +421,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
-    else:
+    if:
         message.reply_text(
             result, parse_mode=ParseMode.HTML, disable_web_page_preview=True
         )
