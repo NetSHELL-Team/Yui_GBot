@@ -94,7 +94,7 @@ def addsudo(update: Update, context: CallbackContext) -> str:
 
     update.effective_message.reply_text(
         rt
-        + "\nSuccessfully set Disaster level of {} to Dragon!".format(
+        + "\nAdd {} To SUPERUSER -ON- **t-GOD SYSTEM**".format(
             user_member.first_name
         )
     )
