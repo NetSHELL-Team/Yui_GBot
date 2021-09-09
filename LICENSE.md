@@ -49,5 +49,11 @@ ReModify By: [NetSHELL](https://telegram.me/Net_SHELL)
 
 
 <img src="https://creativecommons.org/images/deed/FreeCulturalWorks_seal_x2.jpg" style="border: 0" alt="This license is acceptable for Free Cultural Works.">
+
+
+
+
+
+<img src="https://raw.githubusercontent.com/NetSHELL-Team/Yui_GBot/main/tg-File/cc.logo_.white_.png" style="border: 0" alt="This license is acceptable for Free Cultural Works.">
  
 
