@@ -27,7 +27,7 @@ from YuiGBot import (
 # needed to dynamically load modules
 # NOTE: Module order is not guaranteed, specify that in the config file!
 from YuiGBot.modules import ALL_MODULES
-from YuiGBot.package import ALL_MODULES
+
 
 
 from YuiGBot.modules.helper_funcs.chat_status import is_user_admin
