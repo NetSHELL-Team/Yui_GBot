@@ -121,13 +121,15 @@ DATA_EXPORT = []
 CHAT_SETTINGS = {}
 USER_SETTINGS = {}
 
+
+
+#load modules
+
 for module_name in ALL_MODULES:
     imported_module = importlib.import_module("YuiGBot.modules." + module_name)
     
     
     
-for module_name in ALL_MODULES:    
-    imported_module = importlib.import_module("YuiGBot.package." + module_name)
 
     
     
