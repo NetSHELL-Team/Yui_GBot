@@ -33,6 +33,8 @@ Telethon==1.23.0
 telegraph
 ujson==3.0.0
 wikipedia==1.4.0
+postgres
+psycopg2
 zalgo-text==0.6
 pendulum
 textwrap3
