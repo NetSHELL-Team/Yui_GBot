@@ -29,8 +29,8 @@ spamwatch
 speedtest-cli==2.1.2
 spongemock==0.3.4
 
-#sqlalchemy==1.3.20
-SQLAlchemy
+sqlalchemy==1.3.20
+
 
 Telethon==1.23.0
 telegraph
