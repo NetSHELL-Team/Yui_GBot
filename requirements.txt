@@ -9,7 +9,7 @@ emoji==1.4.2
 feedparser==6.0.0b3
 future==0.18.2
 geopy==2.0.0
-git+https://github.com/starry69/python-markdown2.git
+git+https://github.com/trentm/python-markdown2.git
 #googletrans
 google-trans-new==1.1.8
 humanize==3.5.0
