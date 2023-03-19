@@ -80,7 +80,7 @@ def get_readable_time(seconds: int) -> str:
 PM_START_TEXT = """
 Yoo {}, My Name iS {}
 
-i am a group management bot I can help you to manage your group
+i am a group management bot i can help you to manage your group
 You can find my list of available commands with /help
 
 Made By- [GBot_NETᗯOᖇK](https://t.me/GBot_Network)
