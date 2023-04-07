@@ -1,6 +1,6 @@
-2023-04-06 23:52:00,618 - yue_tgbot - WARNING - SpamWatch API key missing! recheck your config.
-2023-04-06 23:53:33,314 - yue_tgbot - WARNING - SpamWatch API key missing! recheck your config.
-2023-04-06 23:58:01,421 - yue_tgbot - WARNING - SpamWatch API key missing! recheck your config.
-2023-04-07 00:00:49,942 - yue_tgbot - WARNING - SpamWatch API key missing! recheck your config.
-2023-04-07 00:00:50,879 - yue_tgbot - INFO - Not loading: ['rss', 'cleaner', 'connection', 'math']
-2023-04-07 00:00:50,887 - yue_tgbot - INFO - Modules to load: ['admin', 'afk', 'anime', 'antiflood', 'approve', 'backups', 'bans', 'blacklistusers', 'blacklist_stickers', 'blacklist_Words', 'cust_filters', 'dbcleanup', 'debug', 'dev', 'disable', 'disasters', 'error_handler', 'eval', 'feds', 'fun', 'fun_strings', 'get_common_chats', 'global_bans', 'gtranslator', 'locks', 'log_channel', 'misc', 'modules', 'muting', 'notes', 'paste', 'ping', 'purge', 'reactions', 'remote_cmds', 'reporting', 'reverse', 'rules', 'stickers', 'telegraph', 'ud', 'upload', 'urluploader', 'userinfo', 'users', 'varification', 'verified_ok', 'warns', 'welcome', 'whatanime', 'wiki', 'zombie']
+2023-04-06 23:52:00,618 - tgbot - WARNING - SpamWatch API key missing! recheck your config.
+2023-04-06 23:53:33,314 - tgbot - WARNING - SpamWatch API key missing! recheck your config.
+2023-04-06 23:58:01,421 - tgbot - WARNING - SpamWatch API key missing! recheck your config.
+2023-04-07 00:00:49,942 - tgbot - WARNING - SpamWatch API key missing! recheck your config.
+2023-04-07 00:00:50,879 - tgbot - INFO - Not loading: ['rss', 'cleaner', 'connection', 'math']
+2023-04-07 00:00:50,887 - tgbot - INFO - Modules to load: ['admin', 'afk', 'anime', 'antiflood', 'approve', 'backups', 'bans', 'blacklistusers', 'blacklist_stickers', 'blacklist_Words', 'cust_filters', 'dbcleanup', 'debug', 'dev', 'disable', 'disasters', 'error_handler', 'eval', 'feds', 'fun', 'fun_strings', 'get_common_chats', 'global_bans', 'gtranslator', 'locks', 'log_channel', 'misc', 'modules', 'muting', 'notes', 'paste', 'ping', 'purge', 'reactions', 'remote_cmds', 'reporting', 'reverse', 'rules', 'stickers', 'telegraph', 'ud', 'upload', 'urluploader', 'userinfo', 'users', 'varification', 'verified_ok', 'warns', 'welcome', 'whatanime', 'wiki', 'zombie']
